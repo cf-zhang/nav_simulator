@@ -26,7 +26,7 @@ FilePath: \cpp_dictionary\source\conf.py
 
 # -- Project information -----------------------------------------------------
 
-project = 'Navigation Simulator'
+project = '一起动手写ROS仿真器'
 copyright = '2023, cf-zhang'
 author = 'Zhang Chuanfa'
 
