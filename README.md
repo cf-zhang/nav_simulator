@@ -1,5 +1,5 @@
 # 一起动手写ROS仿真器
-![Simulator](./source/images/simulator.png)
+![Simulator](source/images/simulator.png)
 
 本仓库是《一起动手写ROS仿真器》系列教程的代码和示例集合。这个教程旨在帮助你从零开始，逐步添加功能，最终完整实现一个用于ROS平台**机器人导航规划控制功能**的ROS仿真器
 
