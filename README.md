@@ -22,7 +22,25 @@ ROS:&nbsp;&nbsp;&nbsp;&nbsp; galactic
 ToDo
 
 ## 贡献
+`一个人走的快，众人走的远`
+
 欢迎对本教程提出问题、反馈和改进建议。如果您发现任何错误或问题，请随时提交Issue或Pull Request。
+
+贡献列表
+
+| name      | email | ROS-Distribution |
+|:-----------:|:----:|:------------:|
+| [cf-zhang](https://github.com/cf-zhang)    | chuanfazhang1992@gmail.com   | ROS2 - Galactic  |
+| [nicklgw](https://github.com/nicklgw)      | nicklgw@aliyun.com   | ROS2 - Humble    |
+| [emoPointer](https://github.com/emoPointer)| 2486547986@qq.com   | ROS - Noetic    |
+
+
+持续为其他ROS版本招募各路伙伴共创，如果你热爱机器人开发，有强烈的责任心，
+请通过下面的微信二维码联系我，并参与进来。参与方式可以参考： [fork_and_pullrequest](./source/docs/fork_and_pr.md)
+
+<img src="./source/images/vx.jpg" alt="微信" width="300">
+
+或者通过邮箱联系到我：` chuanfazhang1992@gmail.com `
 
 ## 许可证
 本教程的代码遵循MIT许可证，详情请参见 LICENSE 文件。
