@@ -8,7 +8,9 @@ ROS（Robot Operating System）是一个广泛使用的机器人开发平台，�
 
 ## 教程目录
 
-[一起动手写ROS仿真器](https://nav-simulator.readthedocs.io/en/latest/)
+[bilibili](https://space.bilibili.com/554016964/channel/collectiondetail?sid=1560370)
+
+[在线文档](https://nav-simulator.readthedocs.io/en/latest/)
 
 ## 安装依赖
 在开始教程之前，请确保教程所使用的环境：
