@@ -24,3 +24,11 @@ private:
   ros::Publisher publisher_;
   rosgraph_msgs::Clock message_;
 };
+
+int main(int argc, char** argv)
+{
+  ros::init(argc, argv, "clock_publisher");
+  ClockPublisher clockPublisher;
+  ros::spin();
+  return 0;
+}
