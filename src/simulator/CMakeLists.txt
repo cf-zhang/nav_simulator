@@ -198,7 +198,13 @@ target_link_libraries(telecontrol
 #   # myfile2
 #   DESTINATION ${CATKIN_PACKAGE_SHARE_DESTINATION}
 # )
+install(TARGETS clock_node telecontrol
+   DESTINATION lib/${PROJECT_NAME})
 
+install(
+    DIRECTORY maps launch rviz
+     DESTINATION share/${PROJECT_NAME}
+)
 #############
 ## Testing ##
 #############
@@ -211,3 +217,4 @@ target_link_libraries(telecontrol
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+

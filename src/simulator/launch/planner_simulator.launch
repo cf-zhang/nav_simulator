@@ -1,0 +1,6 @@
+<launch>
+    <node pkg="simulator" type="clock_node" name="clock" output="screen" />
+    <node pkg="tf" type="static_transform_publisher" name="map_to_base_link" args="0 0 0 0 0 0  map bse_link 100" />
+    <node pkg="rviz" type="rviz" name="rviz" args="-d $(find simulator)/rviz/planner.rviz" output="screen"/>
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find simulator)/maps/b.yaml" output="screen"/>
+</launch>
