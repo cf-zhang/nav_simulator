@@ -40,6 +40,11 @@ ament_target_dependencies(
 install(TARGETS clock_node telecontrol
   DESTINATION lib/${PROJECT_NAME})
 
+install(
+    DIRECTORY maps launch rviz
+    DESTINATION share/${PROJECT_NAME}
+)
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   # the following line skips the linter which checks for copyrights

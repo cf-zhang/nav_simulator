@@ -11,7 +11,9 @@
    docs/仿真器概述.md
    docs/虚拟时钟.md
    docs/遥控器.md
-   docs/地图与坐标系.md
+   docs/地图.md
+   docs/坐标系.md
+   docs/第一个启动脚本.md
    docs/里程计.md
    docs/传感器.md
    docs/障碍物.md
