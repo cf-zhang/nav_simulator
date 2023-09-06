@@ -14,6 +14,8 @@
    docs/地图.md
    docs/坐标系.md
    docs/第一个启动脚本.md
+   docs/路径规划仿真.md
+   docs/第一个全局路径规划器.md
    docs/里程计.md
    docs/传感器.md
    docs/障碍物.md
