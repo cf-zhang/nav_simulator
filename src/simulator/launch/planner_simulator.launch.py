@@ -6,7 +6,7 @@ from ament_index_python.packages import get_package_share_directory
 def generate_launch_description():
     # 获取当前package的目录，并以此得到地图文件的文件名
     package_dir = get_package_share_directory('simulator')
-    yaml_filename = os.path.join(package_dir, 'maps', 'a.yaml')
+    yaml_filename = os.path.join(package_dir, 'maps', 'b.yaml')
     # 设置rviz的加载配置文件位置
     rviz_config = os.path.join(package_dir, 'rviz', 'planner.rviz')
     # 设置需要被lifecycle manager管理的lifecycle node
@@ -19,6 +19,14 @@ def generate_launch_description():
            name='clock',
            output='screen'
            ),
+        # rviz控件指令桥接器，用于planner server指令翻译发送
+        Node(
+           package='simulator',
+           executable='planner_bridge',
+           name='planner_bridge',
+           parameters=[{'use_sim_time': True}],
+           output='screen'
+           ),           
         # 发布一个静态的坐标变换关系，用于描述map->base_link
         Node(
            package='tf2_ros',

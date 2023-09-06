@@ -10,11 +10,15 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rosgraph_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(rclcpp_action REQUIRED)
 
 set(dependencies
   rclcpp
   rosgraph_msgs
   geometry_msgs
+  nav2_msgs
+  rclcpp_action
 )
 
 add_executable(clock_node src/clock_node.cpp)
@@ -37,7 +41,17 @@ ament_target_dependencies(
   ${dependencies}
 )
 
-install(TARGETS clock_node telecontrol
+add_executable(planner_bridge src/planner_bridge.cpp)
+target_include_directories(planner_bridge PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
+target_compile_features(planner_bridge PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
+ament_target_dependencies(
+  planner_bridge
+  ${dependencies}
+)
+
+install(TARGETS clock_node telecontrol planner_bridge
   DESTINATION lib/${PROJECT_NAME})
 
 install(
