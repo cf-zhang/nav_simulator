@@ -21,7 +21,24 @@ ROS:&nbsp;&nbsp;&nbsp;&nbsp; galactic
 
 
 ## 使用方法
+
+### 路径规划器仿真
+```
+# 编译
+git clone https://github.com/cf-zhang/nav_simulator
+cd nav_simulator
+colcon build
+source install/setup.bash
+# 启动仿真器
+ros2 launch simulator planner_simulator.launch.py
+# 另一个终端启动仿真器
+ros2 launch planner planner.launch.py
+```
+
+
+### others
 ToDo
+
 
 ## 贡献
 `一个人走的快，众人走的远`
