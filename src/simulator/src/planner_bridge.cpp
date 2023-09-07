@@ -18,6 +18,10 @@ public:
 PlannerBridge()
 : rclcpp::Node("planner_bridge")
 {
+  // Parameter initialization
+  declare_parameter("planner_id", rclcpp::ParameterValue("GridBased"));
+  get_parameter("planner_id", planner_id_);
+
   goal_sub_ = create_subscription<geometry_msgs::msg::PoseStamped>(
     "goal_pose",
     rclcpp::SystemDefaultsQoS(),
@@ -41,12 +45,14 @@ protected:
 
 void onGoalReceived(const geometry_msgs::msg::PoseStamped::SharedPtr pose)
 {
+  std::cout<<"123 "<<planner_id_<<std::endl;
   if(poses_.size() > 0){
     poses_.push_back(*pose);
     auto goal_msg = nav2_msgs::action::ComputePathThroughPoses::Goal();
     auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::ComputePathThroughPoses>::SendGoalOptions();
     
     goal_msg.goals = poses_;
+    goal_msg.planner_id = planner_id_;
 
     if (!poses_client_->wait_for_action_server()) {
       RCLCPP_ERROR(get_logger(), "Action server %s not available after waiting", "compute_path_through_pose");
@@ -57,10 +63,11 @@ void onGoalReceived(const geometry_msgs::msg::PoseStamped::SharedPtr pose)
     auto goal_msg = nav2_msgs::action::ComputePathToPose::Goal();
     auto send_goal_options = rclcpp_action::Client<nav2_msgs::action::ComputePathToPose>::SendGoalOptions();
     goal_msg.goal = *pose;
+    goal_msg.planner_id = planner_id_;
     if (!pose_client_->wait_for_action_server()) {
       RCLCPP_ERROR(get_logger(), "Action server %s not available after waiting", "compute_path_to_pose");
       return;
-    }    
+    }
     pose_client_->async_send_goal(goal_msg, send_goal_options);
   }
   poses_.clear();
@@ -77,6 +84,7 @@ void onPointReceived(const geometry_msgs::msg::PointStamped::SharedPtr pose)
 
 private:
 
+std::string planner_id_;
 std::vector<geometry_msgs::msg::PoseStamped> poses_;
 
 rclcpp::Subscription<geometry_msgs::msg::PoseStamped>::SharedPtr goal_sub_;

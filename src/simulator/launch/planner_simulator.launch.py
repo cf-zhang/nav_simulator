@@ -24,7 +24,8 @@ def generate_launch_description():
            package='simulator',
            executable='planner_bridge',
            name='planner_bridge',
-           parameters=[{'use_sim_time': True}],
+           parameters=[{'use_sim_time': True},
+                       {'planner_id': "GridBased"}],
            output='screen'
            ),           
         # 发布一个静态的坐标变换关系，用于描述map->base_link

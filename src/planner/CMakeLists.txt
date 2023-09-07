@@ -9,20 +9,52 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_ros REQUIRED)
 find_package(nav2_core REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(nav2_util REQUIRED)
+find_package(nav2_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(nav2_costmap_2d REQUIRED)
+find_package(pluginlib REQUIRED)
 
-add_library(planners src/planners.cpp)
+set(dependencies
+  rclcpp
+  rclcpp_action
+  rclcpp_lifecycle
+  std_msgs
+  visualization_msgs
+  nav2_util
+  nav2_msgs
+  nav_msgs
+  geometry_msgs
+  builtin_interfaces
+  tf2_ros
+  nav2_costmap_2d
+  nav2_core
+  pluginlib
+)
+
+add_library(planners src/straight_line.cpp)
 target_compile_features(planners PUBLIC c_std_99 cxx_std_17)  # Require C99 and C++17
 target_include_directories(planners PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 ament_target_dependencies(
   planners
-  "nav2_core"
+  ${dependencies}
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
 target_compile_definitions(planners PRIVATE "PLANNER_BUILDING_LIBRARY")
+
+pluginlib_export_plugin_description_file(nav2_core planner_plugins.xml)
 
 install(
   DIRECTORY include/
@@ -34,6 +66,10 @@ install(
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
+)
+
+install(FILES planner_plugins.xml
+  DESTINATION share/${PROJECT_NAME}
 )
 
 install(

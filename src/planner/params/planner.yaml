@@ -44,12 +44,16 @@ planner_server:
   ros__parameters:
     expected_planner_frequency: 20.0
     use_sim_time: True
-    planner_plugins: ["GridBased"]
+    planner_plugins: ["GridBased", straight]
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.5
       use_astar: false
       allow_unknown: true
+
+    straight:
+      plugin: "planner/StraightLine"
+      interpolation_resolution: 0.1
 
 planner_server_rclcpp_node:
   ros__parameters:
