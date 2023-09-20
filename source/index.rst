@@ -17,7 +17,8 @@
    docs/路径规划仿真一.md
    docs/路径规划仿真二.md
    docs/第一个全局路径规划器.md
-   docs/里程计.md
+   docs/里程计一.md
+   docs/里程计二.md
    docs/传感器.md
    docs/障碍物.md
 

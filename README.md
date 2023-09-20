@@ -34,7 +34,7 @@ ros2 launch simulator planner_simulator.launch.py
 # 另一个终端启动仿真器
 ros2 launch planner planner.launch.py
 ```
-
+![planner](./source/images/planner_bridge.gif)
 
 ### others
 ToDo
