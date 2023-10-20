@@ -63,7 +63,7 @@ ros2 launch nav2_bringup navigation_launch.py
 
 然后使用`2D Goal Pose`控件设置目标点，可以看到机器人的导航移动效果，具体如下图所示：
 
-![navigation](./../images/navigation.gif)
+![navigation](./source/images/navigation.gif)
 
 ## 贡献
 `一个人走的快，众人走的远`
