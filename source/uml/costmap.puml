@@ -1,0 +1,448 @@
+@startuml
+Title "costmap2d类图"
+
+
+class Costmap2D{
+-- public method --
++Costmap2D();
++~Costmap2D();
++copyCostmapWindow();
++unsigned char getCost() const;
++void setCost();
++void mapToWorld() const;
++bool worldToMap() const;
++void worldToMapNoBounds() const;
++void worldToMapEnforceBounds() const;
++inline unsigned int getIndex() const
++inline void indexToCells() const
++unsigned char* getCharMap() const;
++unsigned int getSizeInCellsX() const;
++unsigned int getSizeInCellsY() const;
++double getSizeInMetersX() const;
++double getSizeInMetersY() const;
++double getOriginX() const;
++double getOriginY() const;
++double getResolution() const;
++void setDefaultValue(unsigned char c)
++unsigned char getDefaultValue()
++bool setConvexPolygonCost();
++void polygonOutlineCells();
++void convexFillCells();
++virtual void updateOrigin();
++bool saveMap();
++void resizeMap();
++void resetMap();
++unsigned int cellDistance();
++mutex_t* getMutex()
+-- protected method --
+#void copyMapRegion();
+#virtual void deleteMaps();
+#virtual void resetMaps();
+#virtual void initMaps();
+#inline void raytraceLine();
+
+-- protected data --
+  unsigned int size_x_;
+  unsigned int size_y_;
+  double resolution_;
+  double origin_x_;
+  double origin_y_;
+  unsigned char* costmap_;
+  unsigned char default_value_;
+-- private method --
+inline void bresenham2D();
+inline int sign(int x);
+-- private data --
+mutex_t* access_;
+}
+
+class Layer{
+-- public method --
++Layer();
++void initialize()
++virtual void updateBounds()
++virtual void updateCosts()
++virtual void deactivate()
++virtual void activate()
++virtual void reset()
++virtual ~Layer()
++bool isCurrent() const
++virtual void matchSize() {}
++std::string getName() const
++const std::vector<geometry_msgs::Point>& getFootprint() const;
++virtual void onFootprintChanged();
+-- protected method --
+#virtual void onInitialize()
+-- protected data --
+#LayeredCostmap* layered_costmap_;
+#bool current_;
+#bool enabled_;
+#std::string name_;
+#tf::TransformListener* tf_;
+
+-- private data --
+-std::vector<geometry_msgs::Point> footprint_spec_;
+}
+
+class CostmapLayer{
+-- public method --
++CostmapLayer()
++bool isDiscretized()
++virtual void matchSize();
++void addExtraBounds();
+
+-- protected method --
+#void updateWithTrueOverwrite();
+#void updateWithOverwrite();
+#void updateWithMax();
+#void updateWithAddition();
+#void touch();
+#void useExtraBounds();
+-- protected data --
+#bool has_extra_bounds_;
+
+-- private data --
+-double extra_min_x_;
+-double extra_max_x_;
+-double extra_min_y_;
+-double extra_max_y_;
+}
+
+
+class LayeredCostmap{
+-- public method --
++LayeredCostmap(std::string global_frame, bool rolling_window, bool track_unknown);
++~LayeredCostmap();
++void updateMap();
++std::string getGlobalFrameID() const
++void resizeMap();
++void getUpdatedBounds()
++bool isCurrent();
++Costmap2D* getCostmap()
++bool isRolling()
++bool isTrackingUnknown()
++std::vector<boost::shared_ptr<Layer> >* getPlugins()
++void addPlugin(boost::shared_ptr<Layer> plugin)
++bool isSizeLocked()
++void getBounds()
++bool isInitialized()
++void setFootprint();
++const std::vector<geometry_msgs::Point>& getFootprint()
++double getCircumscribedRadius()
++double getInscribedRadius()
+
+
+-- private data --
+-Costmap2D costmap_;
+-std::string global_frame_;
+-bool rolling_window_;
+-bool current_;
+-double minx_, miny_, maxx_, maxy_;
+-unsigned int bx0_, bxn_, by0_, byn_;
+-std::vector<boost::shared_ptr<Layer> > plugins_;
+-bool initialized_;
+-bool size_locked_;
+-double circumscribed_radius_, inscribed_radius_;
+-std::vector<geometry_msgs::Point> footprint_;
+}
+
+class Observation{
+ -- public method --
++Observation()
++virtual ~Observation()
+ -- public data --
++geometry_msgs::Point origin_;
++pcl::PointCloud<pcl::PointXYZ>* cloud_;
++double obstacle_range_, raytrace_range_;
+}
+class ObservationBuffer{
+-- public method --
++ObservationBuffer();
++~ObservationBuffer();
++bool setGlobalFrame(const std::string new_global_frame);
++void bufferCloud(const sensor_msgs::PointCloud2& cloud);
++void bufferCloud(const pcl::PointCloud<pcl::PointXYZ>& cloud);
++void getObservations(std::vector<Observation>& observations);
++bool isCurrent() const;
++inline void lock()
++inline void unlock()
++void resetLastUpdated();
+
+-- private method --
+-void purgeStaleObservations();
+-- private data --
+-tf::TransformListener& tf_;
+-const ros::Duration observation_keep_time_;
+-const ros::Duration expected_update_rate_;
+-ros::Time last_updated_;
+-std::string global_frame_;
+-std::string sensor_frame_;
+-std::list<Observation> observation_list_;
+-std::string topic_name_;
+-double min_obstacle_height_, max_obstacle_height_;
+-boost::recursive_mutex lock_;
+-double obstacle_range_, raytrace_range_;
+-double tf_tolerance_;
+}
+class ObstacleLayer{
+-- public method --
++ObstacleLayer()
++virtual ~ObstacleLayer();
++virtual void onInitialize();
++virtual void updateBounds();
++virtual void updateCosts();
++virtual void activate();
++virtual void deactivate();
++virtual void reset();
++void laserScanCallback();
++void laserScanValidInfCallback();
++void pointCloudCallback();
++void pointCloud2Callback();
++void addStaticObservation();
++void clearStaticObservations();
+
+-- protected data --
+#std::vector<geometry_msgs::Point> transformed_footprint_;
+#bool footprint_clearing_enabled_;
+#std::string global_frame_;
+#double max_obstacle_height_;
+#laser_geometry::LaserProjection projector_;
+#std::vector<boost::shared_ptr<message_filters::SubscriberBase> > observation_subscribers_;
+#std::vector<boost::shared_ptr<tf::MessageFilterBase> > observation_notifiers_;
+#std::vector<boost::shared_ptr<costmap_2d::ObservationBuffer> > observation_buffers_;
+#std::vector<boost::shared_ptr<costmap_2d::ObservationBuffer> > marking_buffers_;
+#std::vector<boost::shared_ptr<costmap_2d::ObservationBuffer> > clearing_buffers_;
+#std::vector<costmap_2d::Observation> static_clearing_observations_;
+#std::vector<costmap_2d::Observation> static_marking_observations_;
+#bool rolling_window_;
+#dynamic_reconfigure::Server<costmap_2d::ObstaclePluginConfig> *dsrv_;
+#int combination_method_;
+-- protected method --
+#virtual void setupDynamicReconfigure();
+#bool getMarkingObservations() const;
+#bool getClearingObservations() const;
+#virtual void raytraceFreespace();
+#void updateRaytraceBounds();
+#void updateFootprint();
+-- private method --
+-void reconfigureCB();
+
+
+}
+class StaticLayer{
+-- public method --
++StaticLayer();
++virtual ~StaticLayer();
++virtual void onInitialize();
++virtual void activate();
++virtual void deactivate();
++virtual void reset();
++virtual void updateBounds();
++virtual void updateCosts();
++virtual void matchSize();
+-- private method --
+-void incomingMap(const nav_msgs::OccupancyGridConstPtr& new_map);
+-void incomingUpdate(const map_msgs::OccupancyGridUpdateConstPtr& update);
+-void reconfigureCB(costmap_2d::GenericPluginConfig &config, uint32_t level);
+-unsigned char interpretValue(unsigned char value);
+-- private data --
+-std::string global_frame_;
+-std::string map_frame_;
+-bool subscribe_to_updates_;
+-bool map_received_;
+-bool has_updated_data_;
+-unsigned int x_, y_, width_, height_;
+-bool track_unknown_space_;
+-bool use_maximum_;
+-bool first_map_only_;
+-bool trinary_costmap_;
+-ros::Subscriber map_sub_, map_update_sub_;
+-unsigned char lethal_threshold_, unknown_cost_value_;
+-dynamic_reconfigure::Server<costmap_2d::GenericPluginConfig> *dsrv_;
+}
+class VoxelLayer{
+-- public method --
++VoxelLayer()
++virtual ~VoxelLayer();
++virtual void onInitialize();
++virtual void updateBounds();
++void updateOrigin();
++bool isDiscretized()
++virtual void matchSize();
++virtual void reset();
+-- protected method --
+#virtual void setupDynamicReconfigure();
+#virtual void resetMaps();
+-- private method --
+-void reconfigureCB();
+-void clearNonLethal();
+-virtual void raytraceFreespace();
+-inline bool worldToMap3DFloat()
+-inline bool worldToMap3D()
+-inline void mapToWorld3D()
+-inline double dist()
+
+ -- private data --
+-dynamic_reconfigure::Server<costmap_2d::VoxelPluginConfig> *voxel_dsrv_;
+-bool publish_voxel_;
+-ros::Publisher voxel_pub_;
+-voxel_grid::VoxelGrid voxel_grid_;
+-double z_resolution_, origin_z_;
+-unsigned int unknown_threshold_, mark_threshold_, size_z_;
+-ros::Publisher clearing_endpoints_pub_;
+-sensor_msgs::PointCloud clearing_endpoints_;
+}
+class InflationLayer
+{
+-- public method --
++InflationLayer();
++virtual ~InflationLayer()
++virtual void onInitialize();
++virtual void updateBounds();
++virtual void updateCosts();
++virtual bool isDiscretized()
++virtual void matchSize();
++virtual void reset()
++inline unsigned char computeCost() const
++void setInflationParameters();
+-- protected data --
+#boost::recursive_mutex* inflation_access_;
+-- protected method --
+#virtual void onFootprintChanged();
+
+-- private method --
+-inline double distanceLookup()
+-inline unsigned char costLookup()
+-void computeCaches();
+-void deleteKernels();
+-void inflate_area();
+-unsigned int cellDistance()
+-inline void enqueue();
+-- private data --
+-double inflation_radius_, inscribed_radius_, weight_;
+-bool inflate_unknown_;
+-unsigned int cell_inflation_radius_;
+-unsigned int cached_cell_inflation_radius_;
+-std::map<double, std::vector<CellData> > inflation_cells_;
+-double resolution_;
+-bool* seen_;
+-int seen_size_;
+-unsigned char** cached_costs_;
+-double** cached_distances_;
+-double last_min_x_, last_min_y_, last_max_x_, last_max_y_;
+-dynamic_reconfigure::Server<costmap_2d::InflationPluginConfig> *dsrv_;
+-void reconfigureCB(costmap_2d::InflationPluginConfig &config, uint32_t level);
+-bool need_reinflation_;
+}
+
+
+
+class Costmap2DPublisher
+{
+-- public method --
++Costmap2DPublisher();
++~Costmap2DPublisher();
++void updateBounds(unsigned int x0, unsigned int xn, unsigned int y0, unsigned int yn)
++void publishCostmap();
++bool active()
+-- private method --
+-void prepareGrid();
+-void onNewSubscription();
+-- private data --
+-ros::NodeHandle* node;
+-Costmap2D* costmap_;
+-std::string global_frame_;
+-unsigned int x0_, xn_, y0_, yn_;
+-double saved_origin_x_, saved_origin_y_;
+-bool active_;
+-bool always_send_full_costmap_;
+-ros::Publisher costmap_pub_;
+-ros::Publisher costmap_update_pub_;
+-nav_msgs::OccupancyGrid grid_;
+-static char* cost_translation_table_;
+}
+
+class Costmap2DROS
+{
+-- public method --
++Costmap2DROS(std::string name, tf::TransformListener& tf);
++~Costmap2DROS();
++void start();
++void stop();
++void pause();
++void resume();
++void updateMap();
++void resetLayers();
++bool resetLayerByName(const char* name);
++bool isCurrent()
++bool getRobotPose(tf::Stamped<tf::Pose>& global_pose) const;
++Costmap2D* getCostmap()
++std::string getGlobalFrameID()
++std::string getBaseFrameID()
++LayeredCostmap* getLayeredCostmap()
++geometry_msgs::Polygon getRobotFootprintPolygon()
++std::vector<geometry_msgs::Point> getRobotFootprint()
++std::vector<geometry_msgs::Point> getUnpaddedRobotFootprint()
++void getOrientedFootprint() const;
++void setUnpaddedRobotFootprint();
++void setUnpaddedRobotFootprintPolygon();
+
+-- protected data --
+#LayeredCostmap* layered_costmap_;
+#std::string name_;
+#tf::TransformListener& tf_;
+#std::string global_frame_;
+#std::string robot_base_frame_;
+#double transform_tolerance_;
+
+-- private method --
+-void readFootprintFromConfig();
+-void resetOldParameters();
+-void reconfigureCB();
+-void movementCB();
+-void mapUpdateLoop();
+-- private data --
+-bool map_update_thread_shutdown_;
+-bool stop_updates_, initialized_;
+-bool stopped_, robot_stopped_;
+-boost::thread* map_update_thread_;
+-ros::Timer timer_;
+-ros::Time last_publish_;
+-ros::Duration publish_cycle;
+-pluginlib::ClassLoader<Layer> plugin_loader_;
+-tf::Stamped<tf::Pose> old_pose_;
+-Costmap2DPublisher* publisher_;
+-dynamic_reconfigure::Server<costmap_2d::Costmap2DConfig> *dsrv_;
+-boost::recursive_mutex configuration_mutex_;
+-ros::Subscriber footprint_sub_;
+-ros::Publisher footprint_pub_;
+-bool got_footprint_;
+-std::vector<geometry_msgs::Point> unpadded_footprint_;
+-std::vector<geometry_msgs::Point> padded_footprint_;
+-float footprint_padding_;
+-costmap_2d::Costmap2DConfig old_config_;
+}
+
+
+
+Costmap2DROS *-- Costmap2DPublisher
+Costmap2DROS *-- LayeredCostmap
+Costmap2DPublisher *-- Costmap2D
+Layer *-- LayeredCostmap
+LayeredCostmap *-- InflationLayer
+LayeredCostmap *-- ObstacleLayer
+LayeredCostmap *-- StaticLayer
+LayeredCostmap *-- VoxelLayer
+
+ObstacleLayer *-- ObservationBuffer
+ObservationBuffer *-- Observation
+Layer <|-- InflationLayer
+
+CostmapLayer <|-- StaticLayer
+Costmap2D <|-- CostmapLayer
+Layer <|-- CostmapLayer
+CostmapLayer <|-- ObstacleLayer
+ObstacleLayer <|-- VoxelLayer
+
+
+@enduml
