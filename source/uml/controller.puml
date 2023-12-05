@@ -1,0 +1,156 @@
+@startuml
+'https://plantuml.com/class-diagram
+class Controller{
+}
+
+class MapBaseQueue<? item_t>{
+}
+
+class CellData{
+}
+
+class CostmapQueue{
+}
+
+class LimitedCostmapQueue{
+}
+
+
+MapBaseQueue <-- CostmapQueue
+CostmapQueue o-- CellData
+CostmapQueue *-- Costmap2D
+CostmapQueue <-- LimitedCostmapQueue
+
+
+class KinematicParameters
+{
+}
+
+class KinematicsHandler
+{
+}
+
+class OneDVelocityIterator{
+}
+
+class VelocityIterator{
+}
+
+class XYThetaIterator{
+}
+
+class StandardTrajectoryGenerator{
+}
+class LimitedAccelGenerator{
+}
+
+KinematicsHandler *-- KinematicParameters
+VelocityIterator <-- XYThetaIterator
+XYThetaIterator *-- KinematicsHandler
+XYThetaIterator *-- OneDVelocityIterator
+StandardTrajectoryGenerator *-- KinematicsHandler
+StandardTrajectoryGenerator *-- VelocityIterator
+StandardTrajectoryGenerator <-- LimitedAccelGenerator
+
+
+
+
+class DWBLocalPlanner{
+}
+
+class DWBPublisher
+{
+}
+
+class TrajectoryCritic
+{
+}
+
+class TrajectoryGenerator{
+}
+
+class traj_utils
+{
+}
+TrajectoryCritic *-- Costmap2D
+DWBLocalPlanner *-- Costmap2D
+DWBLocalPlanner *-- DWBPublisher
+DWBLocalPlanner *-- TrajectoryCritic
+DWBLocalPlanner *-- TrajectoryGenerator
+
+class LineIterator{
+}
+class alignment_util{
+}
+
+class TwirlingCritic{
+}
+
+class RotateToGoalCritic{
+}
+
+class PreferForwardCritic{
+}
+
+class BaseObstacleCritic{
+}
+
+class ObstacleFootprintCritic{
+}
+
+class MapGridQueue{
+}
+enum ScoreAggregationType{
+Last,
+Sum,
+Product
+}
+
+class MapGridCritic{
+}
+
+class GoalDistCritic{
+}
+class GoalAlignCritic{
+}
+
+class PathDistCritic{
+}
+
+class PathAlignCritic{
+}
+
+class CommandTrend{
+}
+
+class OscillationCritic{
+}
+
+OscillationCritic *-- CommandTrend
+BaseObstacleCritic <-- ObstacleFootprintCritic
+BaseObstacleCritic *-- Costmap2D
+MapGridCritic *-- Costmap2D
+MapGridCritic *-- ScoreAggregationType
+MapGridCritic *-- MapGridQueue
+MapGridQueue *-- MapGridCritic
+MapGridCritic <-- GoalDistCritic
+GoalDistCritic <-- GoalAlignCritic
+MapGridCritic <-- PathDistCritic
+PathDistCritic <-- PathAlignCritic
+
+
+TrajectoryCritic <-- OscillationCritic
+CostmapQueue <-- MapGridQueue
+TrajectoryCritic <-- MapGridCritic
+TrajectoryCritic <-- PreferForwardCritic
+TrajectoryCritic <-- RotateToGoalCritic
+TrajectoryCritic <-- TwirlingCritic
+TrajectoryCritic <-- BaseObstacleCritic
+
+TrajectoryGenerator <-- StandardTrajectoryGenerator
+Controller <-- DWBLocalPlanner
+
+
+
+
+@enduml
