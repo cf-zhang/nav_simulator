@@ -33,7 +33,7 @@ Transform::Transform() : rclcpp::Node("robot"){
                          std::bind(&Transform::velCallback, this, _1));
 
     last_update_moment_ = now();
-    last_vel_moment_ = last_update_moment_ - rclcpp::Duration(0.1);
+    last_vel_moment_ = last_update_moment_ - rclcpp::Duration::from_seconds(0.1);
     tf_broadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(*this);
     tf_buffer_ = std::make_unique<tf2_ros::Buffer>(get_clock());
     odom_.header.stamp = last_update_moment_;
@@ -70,6 +70,10 @@ void Transform::updateLoop(){
 
 void Transform::updateOdomFromVel(geometry_msgs::msg::Twist vel, rclcpp::Duration time_diff){
     double dt = time_diff.seconds();
+    if (dt > 1.0)
+    {
+        return;
+    }
     double delta_x = (vel.linear.x * cos(th_) - vel.linear.y * sin(th_)) * dt;
     double delta_y = (vel.linear.x * sin(th_) + vel.linear.y * cos(th_)) * dt;
     double delta_th = vel.angular.z * dt;
@@ -78,7 +82,7 @@ void Transform::updateOdomFromVel(geometry_msgs::msg::Twist vel, rclcpp::Duratio
     th_ += delta_th;
     odom_.pose.pose.orientation = tf2::toMsg(tf2::Quaternion(tf2::Vector3(0, 0, 1), th_));
     odom_.twist.twist = vel;
-    odom_.header.stamp = last_update_moment_;
+    odom_.header.stamp = latest_vel_moment_;
     odom_.header.frame_id = odom_frame_id_;
 }
 void Transform::getTfFromOdom(nav_msgs::msg::Odometry odom){
@@ -94,9 +98,12 @@ void Transform::getTfFromOdom(nav_msgs::msg::Odometry odom){
     odom_baselink_trans_ = odom_tmp;  
 }
 void Transform::velCallback(const geometry_msgs::msg::Twist::SharedPtr msg){
-    last_vel_moment_ = now();
+    latest_vel_moment_ = now();
+
     message_received_ = true;
-    updateOdomFromVel(*msg, last_vel_moment_ - last_update_moment_);
+    RCLCPP_ERROR(get_logger(), "%f, %f", last_update_moment_.seconds(),last_vel_moment_.seconds());
+    updateOdomFromVel(*msg, latest_vel_moment_ - last_vel_moment_);
+    last_vel_moment_ = latest_vel_moment_;
 }
 void Transform::initPoseCallback(const geometry_msgs::msg::PoseWithCovarianceStamped::SharedPtr msg){
     if (msg->header.frame_id.find(world_frame_id_) == msg->header.frame_id.npos)

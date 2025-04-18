@@ -49,7 +49,7 @@ private:
     geometry_msgs::msg::TransformStamped map_odom_trans_;
     std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
 
-    rclcpp::Time last_vel_moment_;
+    rclcpp::Time last_vel_moment_, latest_vel_moment_;
     rclcpp::Time last_update_moment_;
     rclcpp::Time measure_time_;
     bool message_received_ = false;

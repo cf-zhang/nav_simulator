@@ -13,6 +13,7 @@ find_package(geometry_msgs REQUIRED)
 find_package(nav2_msgs REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 set(dependencies
   rclcpp
@@ -21,6 +22,7 @@ set(dependencies
   nav2_msgs
   rclcpp_action
   tf2_ros
+  tf2_geometry_msgs
 )
 
 add_executable(clock_node src/clock_node.cpp)
